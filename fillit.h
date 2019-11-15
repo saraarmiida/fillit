@@ -6,18 +6,21 @@
 /*   By: spentti <spentti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/12 17:24:11 by spentti           #+#    #+#             */
-/*   Updated: 2019/11/15 12:40:31 by spentti          ###   ########.fr       */
+/*   Updated: 2019/11/15 16:41:15 by spentti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FILLIT_H
 # define FILLIT_H
 
+#include "libft/includes/libft.h"
+#include <fcntl.h>
+#include <stdlib.h>
+
 typedef struct   s_block
 {
-    int				x[4];
-    int				y[4];
-	int				size;
+	int				origo;
+    int				offset[4];
     char			*str;
     struct s_block	*next;
 }                t_block;
@@ -31,6 +34,9 @@ typedef struct   s_saved
     struct s_block	*head;
 }                t_saved;
 
+t_saved	*create_info(void);
+
 int		validate_file(int fd, t_saved *info);
+void	get_xy(const char *str, int *origo, int *offset);
 
 #endif

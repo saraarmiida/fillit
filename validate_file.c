@@ -6,7 +6,7 @@
 /*   By: spentti <spentti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/11 12:24:22 by spentti           #+#    #+#             */
-/*   Updated: 2019/11/15 12:51:43 by spentti          ###   ########.fr       */
+/*   Updated: 2019/11/15 16:42:16 by spentti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,15 @@ int		check_line(char *str, int lines)
 	return (0);
 }
 
+t_block	*set_block(const char *block)
+{
+	t_block *moi;
+
+	moi = (t_block *)malloc(sizeof(*moi));
+	moi->str = ft_strdup(block);
+	return (moi);
+}
+
 int		validate_block(char *tetr)
 {
 	int i;
@@ -62,45 +71,45 @@ int		validate_block(char *tetr)
 				val++;
 		}
 	}
-	printf("k : %d, val : %d\n", k, val);
 	if (k == 4 && (val == 8 || val == 6))
 		return (0);
 	return (1);
 }
 
-int	make_blocks(t_saved *info)
+int	make_blocks(t_saved *info, int id)
 {
-	t_block *block;
-
-	if (info->block_lines % 4 == 0 && info->block_lines != 0)
-	{
-		if (info->head == NULL)
+	static t_block *block;
+	int		i;
+	
+	if (id == 2)
+		block = NULL;
+	else
+		if (info->block_lines % 4 == 0 && info->block_lines != 0)
 		{
-			if (!(block = (t_block *)malloc(sizeof(t_block))))
-				return (1);
-			info->head = block;
-		}
-		else
-		{
-			block = info->head;
-			while (block->next != NULL)
+			
+			if (info->head == NULL)
+			{
+				if (!(info->head = set_block(info->single_block)))
+					return (1);
+				block = info->head;
+			}
+			else
+			{
+				block->next = set_block(info->single_block);
 				block = block->next;
-			block = block->next;
-			if (!(block = (t_block *)malloc(sizeof(t_block))))
+			}
+			ft_strclr(info->single_block);
+			if (validate_block(block->str))
 				return (1);
-
+			get_xy(block->str, &(block->origo), block->offset);
+			i = 0;
+			while (i < 4)
+				printf("Origo is %d, Offset from origo %d\n", block->origo, block->offset[i++]);
+			info->block_lines = 0;
 		}
-		if (!(block->str = ft_strnew(16)))
-			return (1);
-		block->str = ft_strdup(info->single_block);
-		ft_strclr(info->single_block);
-		if (validate_block(block->str) == 1)
-			return (1);
-		info->block_lines = 0;
-		info->block_i++;
-	}
 	return (0);
 }
+
 
 t_saved	*create_info(void)
 {
@@ -110,7 +119,6 @@ t_saved	*create_info(void)
 		return (NULL);
 	info->block_lines = 0;
 	info->total_lines = 0;
-	info->block_i = 0;
 	info->single_block = NULL;
 	info->head = NULL;
 	return (info);
@@ -121,11 +129,11 @@ int	validate_file(int fd, t_saved *info)
 	char	*line;
 	char	*tmp;
 
-	if (!(info = create_info()))
-		return (1);
+	// if (!(info = create_info()))
+	// 	return (1);
 	while ((get_next_line(fd, &line)) > 0)
 	{
-		info->total_lines++;
+		info->total_lines += 1;
 		if (check_line(line, info->total_lines))
 			return (1);
 		if (!info->single_block)
@@ -137,9 +145,10 @@ int	validate_file(int fd, t_saved *info)
 			info->single_block = tmp;
 		}
 		if (ft_strlen(line) == 4)
-			info->block_lines++;
-		if (make_blocks(info))
-			return (1);
+			info->block_lines += 1;
+		if (info->block_lines % 4 == 0 && info->block_lines != 0)
+			if (make_blocks(info, 1))
+				return (1);
 	}
 	return (0);
 }
