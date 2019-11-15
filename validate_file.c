@@ -6,7 +6,7 @@
 /*   By: spentti <spentti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/11 12:24:22 by spentti           #+#    #+#             */
-/*   Updated: 2019/11/13 16:48:41 by spentti          ###   ########.fr       */
+/*   Updated: 2019/11/15 12:51:43 by spentti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int		check_line(char *str, int lines)
 	return (0);
 }
 
-int		validate_tetr(char *tetr)
+int		validate_block(char *tetr)
 {
 	int i;
 	int val;
@@ -68,13 +68,33 @@ int		validate_tetr(char *tetr)
 	return (1);
 }
 
-int		make_blocks(t_saved *info)
+int	make_blocks(t_saved *info)
 {
+	t_block *block;
+
 	if (info->block_lines % 4 == 0 && info->block_lines != 0)
 	{
-		info->blocks[info->block_i] = ft_strdup(info->single_block);
+		if (info->head == NULL)
+		{
+			if (!(block = (t_block *)malloc(sizeof(t_block))))
+				return (1);
+			info->head = block;
+		}
+		else
+		{
+			block = info->head;
+			while (block->next != NULL)
+				block = block->next;
+			block = block->next;
+			if (!(block = (t_block *)malloc(sizeof(t_block))))
+				return (1);
+
+		}
+		if (!(block->str = ft_strnew(16)))
+			return (1);
+		block->str = ft_strdup(info->single_block);
 		ft_strclr(info->single_block);
-		if (validate_tetr(info->blocks[info->block_i]) == 1)
+		if (validate_block(block->str) == 1)
 			return (1);
 		info->block_lines = 0;
 		info->block_i++;
@@ -92,16 +112,17 @@ t_saved	*create_info(void)
 	info->total_lines = 0;
 	info->block_i = 0;
 	info->single_block = NULL;
+	info->head = NULL;
 	return (info);
 }
 
-int		validate_file(int fd, t_saved *info)
+int	validate_file(int fd, t_saved *info)
 {
 	char	*line;
 	char	*tmp;
 
 	if (!(info = create_info()))
-		return (-1);
+		return (1);
 	while ((get_next_line(fd, &line)) > 0)
 	{
 		info->total_lines++;

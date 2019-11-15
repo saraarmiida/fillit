@@ -6,7 +6,7 @@
 /*   By: spentti <spentti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/13 13:27:32 by spentti           #+#    #+#             */
-/*   Updated: 2019/11/13 16:48:44 by spentti          ###   ########.fr       */
+/*   Updated: 2019/11/15 12:32:50 by spentti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int		main(int argc, char **argv)
 		ft_putendl("File not valid.");
 		return (-1);
 	}
-	make_list(&(info->blocks), &head);
+	//make_list(&(info->blocks), &head);
 
 	// solve_file();
 	return (0);

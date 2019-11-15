@@ -6,7 +6,7 @@
 /*   By: spentti <spentti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/12 17:24:11 by spentti           #+#    #+#             */
-/*   Updated: 2019/11/13 13:43:45 by spentti          ###   ########.fr       */
+/*   Updated: 2019/11/15 12:40:31 by spentti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,7 @@ typedef struct   s_block
     int				x[4];
     int				y[4];
 	int				size;
-    char			block[16 + 1];
-    struct s_block	*next;
-}                t_block;
-
-typedef struct   s_block
-{
-    int				x[4];
-    int				y[4];
-    char			*block;
+    char			*str;
     struct s_block	*next;
 }                t_block;
 
@@ -36,9 +28,9 @@ typedef struct   s_saved
 	int 	block_lines;
 	int 	block_i;
 	char	*single_block;
-    char	*blocks[4];
+    struct s_block	*head;
 }                t_saved;
 
-int		validate_file(int fd);
+int		validate_file(int fd, t_saved *info);
 
 #endif
