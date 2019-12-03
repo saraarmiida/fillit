@@ -6,7 +6,7 @@
 /*   By: spentti <spentti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/16 13:12:21 by spentti           #+#    #+#             */
-/*   Updated: 2019/11/13 14:20:23 by spentti          ###   ########.fr       */
+/*   Updated: 2019/11/25 16:17:34 by spentti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # define BUFF_SIZE 50000
 # define FD_MAX 4864
 
-int get_next_line(const int fd, char **line);
+int					get_next_line(const int fd, char **line);
 
 typedef struct		s_list
 {

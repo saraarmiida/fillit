@@ -6,7 +6,7 @@
 /*   By: spentti <spentti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/30 09:23:47 by spentti           #+#    #+#             */
-/*   Updated: 2019/11/13 14:20:26 by spentti          ###   ########.fr       */
+/*   Updated: 2019/11/29 16:36:09 by spentti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,17 +18,17 @@ static int	str_to_line(char **str, char **line, int fd)
 	int		len;
 
 	len = 0;
-	while (str[fd][len] != '\n' && str[fd][len] != '\0')
+	while ((str[fd][len] != '\n' && str[fd][len] != '\0'))
 		len++;
 	if (!(*line = ft_strndup(str[fd], len)))
 		return (-1);
-	if (str[fd][len] == '\n' && str[fd][len + 1] != '\0')
+	if (str[fd][len] == '\n')
 	{
 		temp = ft_strdup(str[fd] + len + 1);
 		free(str[fd]);
 		str[fd] = temp;
 	}
-	else if (str[fd][len] == '\0' || str[fd][len + 1] == '\0')
+	else if (str[fd][len] == '\0')
 		ft_strdel(&str[fd]);
 	return (1);
 }
@@ -57,7 +57,7 @@ int			get_next_line(const int fd, char **line)
 	}
 	if (j < 0)
 		return (-1);
-	if (str[fd] == NULL || str[fd][0] == '\0')
+	if (str[fd] == NULL)
 		return (0);
 	return (str_to_line(str, line, fd));
 }

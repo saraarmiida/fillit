@@ -6,23 +6,49 @@
 /*   By: spentti <spentti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/15 16:35:22 by spentti           #+#    #+#             */
-/*   Updated: 2019/11/15 16:41:01 by spentti          ###   ########.fr       */
+/*   Updated: 2019/11/29 15:27:19 by spentti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fillit.h"
-#include <stdio.h>
 
-void	set_xy(int *x, int *y, int *y_max, int *x_max, int *y_min, int *x_min)
+void	int_bzero(int *array, size_t n)
 {
-	if (*x > *x_max)
-		*x_max = *x;
-	if (*y > *y_max)
-		*y_max = *y;
-	if (*x <= *x_min)
-		*x_min = *x;
-	if (*y <= *y_min)
-		*y_min = *y;
+	size_t	i;
+
+	i = 0;
+	if (array)
+	{
+		while (i < n)
+		{
+			array[i] = 0;
+			i++;
+		}
+	}
+}
+
+void	set_xy(int *xy)
+{
+	if (xy[1] > xy[4])
+		xy[4] = xy[1];
+	if (xy[2] > xy[3])
+		xy[3] = xy[2];
+	if (xy[1] <= xy[6])
+		xy[6] = xy[1];
+	if (xy[2] <= xy[5])
+		xy[5] = xy[2];
+}
+
+void	set_offset(int *offset, int *origo)
+{
+	int i;
+
+	i = 0;
+	while (i < 4)
+	{
+		offset[i] = offset[i] - *origo;
+		i++;
+	}
 }
 
 void	get_xy(const char *str, int *origo, int *offset)
@@ -31,19 +57,15 @@ void	get_xy(const char *str, int *origo, int *offset)
 	int		xy[7];
 
 	o = 0;
-	xy[0] = 0; //i
-	xy[1] = 0; //x
-	xy[2] = 0; //y
-	xy[3] = xy[2]; //y_max
-	xy[4] = xy[1]; //x_max
-	xy[5] = 3; //y_min
-	xy[6] = 3; //x_min
+	int_bzero(xy, 5);
+	xy[5] = 3;
+	xy[6] = 3;
 	while (str[xy[0]])
 	{
 		if (str[xy[0]] == '#')
 		{
 			offset[o++] = xy[0];
-			set_xy(&xy[1], &xy[2], &xy[3], &xy[4], &xy[5], &xy[6]);
+			set_xy(xy);
 		}
 		xy[1]++;
 		if (xy[1] % 4 == 0)
@@ -54,11 +76,5 @@ void	get_xy(const char *str, int *origo, int *offset)
 		xy[0]++;
 	}
 	*origo = xy[5] * 4 + xy[6];
-	xy[0] = 0;
-	while (xy[0] < 4)
-	{
-		offset[xy[0]] = offset[xy[0]] - *origo;
-		xy[0]++;
-	}
-	printf("Max x,y is %d,%d | Min x,y is %d,%d\n", xy[3], xy[4], xy[5], xy[6]);
+	set_offset(offset, origo);
 }

@@ -6,23 +6,21 @@
 /*   By: spentti <spentti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/11 12:24:22 by spentti           #+#    #+#             */
-/*   Updated: 2019/11/15 16:42:16 by spentti          ###   ########.fr       */
+/*   Updated: 2019/12/03 19:02:09 by spentti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft/includes/libft.h"
-#include <stdio.h>
 #include "fillit.h"
 
-int		check_line(char *str, int lines)
+int			check_line(char *str, int lines)
 {
-	int i;
+	int					i;
 
 	i = 0;
-	if (ft_strlen(str) != 4 && ft_strlen(str) != 0)
-		return (1);
 	if (lines >= 0 && lines % 5 != 0)
 	{
+		if (ft_strlen(str) != 4)
+			return (1);
 		while (str[i])
 		{
 			if (str[i] != '#' && str[i] != '.')
@@ -32,26 +30,19 @@ int		check_line(char *str, int lines)
 	}
 	else if (lines % 5 == 0)
 	{
+		if (ft_strlen(str) != 0)
+			return (1);
 		if (str[i] != '\0' && str[i] != '\n')
 			return (1);
 	}
 	return (0);
 }
 
-t_block	*set_block(const char *block)
+int			validate_block(char *tetr)
 {
-	t_block *moi;
-
-	moi = (t_block *)malloc(sizeof(*moi));
-	moi->str = ft_strdup(block);
-	return (moi);
-}
-
-int		validate_block(char *tetr)
-{
-	int i;
-	int val;
-	int k;
+	int					i;
+	int					val;
+	int					k;
 
 	k = 0;
 	val = 0;
@@ -76,61 +67,39 @@ int		validate_block(char *tetr)
 	return (1);
 }
 
-int	make_blocks(t_saved *info, int id)
+t_saved		*create_info(void)
 {
-	static t_block *block;
-	int		i;
-	
-	if (id == 2)
-		block = NULL;
-	else
-		if (info->block_lines % 4 == 0 && info->block_lines != 0)
-		{
-			
-			if (info->head == NULL)
-			{
-				if (!(info->head = set_block(info->single_block)))
-					return (1);
-				block = info->head;
-			}
-			else
-			{
-				block->next = set_block(info->single_block);
-				block = block->next;
-			}
-			ft_strclr(info->single_block);
-			if (validate_block(block->str))
-				return (1);
-			get_xy(block->str, &(block->origo), block->offset);
-			i = 0;
-			while (i < 4)
-				printf("Origo is %d, Offset from origo %d\n", block->origo, block->offset[i++]);
-			info->block_lines = 0;
-		}
-	return (0);
-}
-
-
-t_saved	*create_info(void)
-{
-	t_saved	*info;
+	t_saved				*info;
 
 	if (!(info = malloc(sizeof(t_saved))))
 		return (NULL);
 	info->block_lines = 0;
 	info->total_lines = 0;
+	info->grid_length = 0;
 	info->single_block = NULL;
 	info->head = NULL;
 	return (info);
 }
 
-int	validate_file(int fd, t_saved *info)
+int			test_valid(t_saved *info, const char *line)
 {
-	char	*line;
-	char	*tmp;
+	if (ft_strlen(line) == 4)
+		info->block_lines += 1;
+	if (info->block_lines % 4 == 0 && info->block_lines != 0)
+	{
+		if (make_blocks(info, 1))
+			return (1);
+	}
+	return (0);
+}
 
-	// if (!(info = create_info()))
-	// 	return (1);
+int			validate_file(int fd, t_saved *info)
+{
+	char				*line;
+	char				*tmp;
+	int					i;
+
+	i = 0;
 	while ((get_next_line(fd, &line)) > 0)
 	{
 		info->total_lines += 1;
@@ -144,11 +113,10 @@ int	validate_file(int fd, t_saved *info)
 			free(info->single_block);
 			info->single_block = tmp;
 		}
-		if (ft_strlen(line) == 4)
-			info->block_lines += 1;
-		if (info->block_lines % 4 == 0 && info->block_lines != 0)
-			if (make_blocks(info, 1))
-				return (1);
+		if (test_valid(info, line))
+			return (1);
+		ft_strdel(&line);
 	}
+	close(fd);
 	return (0);
 }
